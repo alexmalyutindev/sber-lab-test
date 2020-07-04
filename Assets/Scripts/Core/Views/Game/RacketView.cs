@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace Core
+namespace Core.Views.Game
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class RacketView : MonoBehaviour

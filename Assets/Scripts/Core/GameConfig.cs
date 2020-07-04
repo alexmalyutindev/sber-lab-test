@@ -6,5 +6,7 @@ namespace Core
     public class GameConfig : ScriptableObject
     {
         public GameObject RacketPrefab;
+        public int MaxScores = 10;
+        public float BallSpeed;
     }
 }

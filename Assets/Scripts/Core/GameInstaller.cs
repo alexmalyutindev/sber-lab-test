@@ -1,4 +1,6 @@
-﻿using Core.Services;
+﻿using Core.Models;
+using Core.Services;
+using Core.Views.Game;
 using Photon.Pun;
 using UnityEngine;
 
@@ -25,6 +27,9 @@ namespace Core
             _leftRacket.SetView(_config.RacketPrefab);
             _rightRacket.SetView(_config.RacketPrefab);
 
+            if (PhotonNetwork.IsMasterClient)
+                gameObject.AddComponent<BallModel>().Initialize(_ball);
+            
             if (IsActivePlayer())
             {
                 var targetRacket = GetTargetRacket();
