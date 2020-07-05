@@ -1,10 +1,22 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Trigger : MonoBehaviour
+namespace Core.Misc
 {
-    public Action<Collider> OnTriggerEnterEvent;
-    private void OnTriggerEnter(Collider other) => OnTriggerEnterEvent?.Invoke(other);
+    [RequireComponent(typeof(Rigidbody2D))]
+    public class Trigger : MonoBehaviour
+    {
+        public event Action OnTriggerEnter;
+
+        [SerializeField] private LayerMask _mask;
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            Debug.Log($"-> Trigger {other}!", this);
+            if ((1 << other.gameObject.layer & _mask.value) > 0)
+            {
+                OnTriggerEnter?.Invoke();
+            }
+        }
+    }
 }

@@ -13,10 +13,11 @@ namespace Core.Services
         {
             _camera = camera;
             _view = view;
+            _view.NetworkView.RequestOwnership();
             return this;
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (Input.GetMouseButton(0))
             {

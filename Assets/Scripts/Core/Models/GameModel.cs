@@ -1,23 +1,56 @@
+using System;
+using System.Collections.Generic;
+using Core.Misc;
 using UnityEngine;
 
-namespace Core
+namespace Core.Models
 {
     public class GameModel
     {
-        private Rigidbody _leftRacket;
-        private Rigidbody _rightRacket;
-        private Rigidbody _ball;
-        
-        public GameModel(Rigidbody leftRacket, Rigidbody rightRacket, Rigidbody ball)
-        {
-            _leftRacket = leftRacket;
-            _rightRacket = rightRacket;
-            _ball = ball;
-        }
+        public event Action<PlayerSide> OnPlayerWins;
+        public event Action<int, int> OnScoreChanged;
 
-        public void Update()
+        private Dictionary<PlayerSide, int> _scores;
+
+        private readonly GameConfig _config;
+
+        public GameModel(Trigger leftPlayerTrigger, Trigger rightPlayerTrigger, GameConfig config)
         {
+            _config = config;
+
+            _scores = new Dictionary<PlayerSide, int>() {{PlayerSide.Left, 0}, {PlayerSide.Right, 0}};
+
+            leftPlayerTrigger.OnTriggerEnter += () => AddScore(PlayerSide.Left);
+            rightPlayerTrigger.OnTriggerEnter += () => AddScore(PlayerSide.Right);
+            
             
         }
+
+        public void ResetScore()
+        {
+            _scores = new Dictionary<PlayerSide, int>() {{PlayerSide.Left, 0}, {PlayerSide.Right, 0}};
+            OnScoreChanged?.Invoke(_scores[PlayerSide.Left], _scores[PlayerSide.Right]);
+        }
+
+        private void AddScore(PlayerSide side)
+        {
+            Debug.Log(side);
+            _scores[side]++;
+            OnScoreChanged?.Invoke(_scores[PlayerSide.Left], _scores[PlayerSide.Right]);
+            if (_scores[side] >= _config.MaxScore)
+                OnPlayerWins?.Invoke(side);
+        }
+    }
+
+    public enum PlayerRole
+    {
+        Player = 0,
+        Spectator = 1
+    }
+
+    public enum PlayerSide
+    {
+        Left,
+        Right
     }
 }

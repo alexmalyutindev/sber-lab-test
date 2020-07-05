@@ -1,21 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RoomView : MonoBehaviour
+namespace Core.Views.UI
 {
-    public Action OnPlay;
-    
-    [SerializeField] private Text _playerListField;
+    public class RoomView : MonoBehaviour
+    {
+        public event Action OnRequestPlay;
+        public event Action OnStartGame;
+        
+#pragma warning disable 0649
+        [SerializeField] private Text _roomNameField;
+        [SerializeField] private Text _playerListField;
+        [SerializeField] private Button _play;
+#pragma warning restore 0649
+        
+        private void Awake()
+        {
+            _play.onClick.AddListener(PlayHandler);
+        }
 
-    [SerializeField] private Button _play;
+        public void Show(string roomName, bool isHost)
+        {
+            gameObject.SetActive(true);
+            _roomNameField.text = $"Room: {roomName}";
+            _play.interactable = isHost;
+        }
 
-    private void Awake() => 
-        _play.onClick.AddListener(PlayHandler);
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
 
-    private void PlayHandler() => OnPlay?.Invoke();
+        private void PlayHandler() => OnRequestPlay?.Invoke();
 
-    public void SetPlayersList(List<string> players) => 
-        _playerListField.text = String.Join("\n", players);
+        [PunRPC]
+        public void StartGame()
+        {
+            OnStartGame?.Invoke();
+        }
+
+        public void SetPlayersList(List<string> players) => 
+            _playerListField.text = String.Join("\n", players);
+
+
+    }
 }

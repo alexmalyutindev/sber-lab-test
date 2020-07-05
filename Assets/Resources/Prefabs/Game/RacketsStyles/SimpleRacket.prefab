@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 614510832807036013}
   - component: {fileID: 614510832807036012}
   m_Layer: 0
-  m_Name: Simple
+  m_Name: SimpleRacket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104,7 +104,7 @@ BoxCollider2D:
     adaptiveTilingThreshold: 0.5
     drawMode: 1
     adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_AutoTiling: 1
   serializedVersion: 2
-  m_Size: {x: 0.08088717, y: 0.92154276}
-  m_EdgeRadius: 0.03
+  m_Size: {x: 0.06, y: 0.06}
+  m_EdgeRadius: 0.04

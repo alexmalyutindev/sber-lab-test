@@ -1,5 +1,7 @@
 using System.Linq;
+using Core.Models;
 using Core.Services;
+using Core.Views.UI;
 using Photon.Pun;
 using UnityEngine;
 
@@ -18,36 +20,42 @@ namespace Core.Presenters
             _roomView = roomView;
             _service = service;
             
-            _lobbyView.gameObject.SetActive(false);
-            _roomView.gameObject.SetActive(false);
+            _lobbyView.Hide();
+            _roomView.Hide();
             
             _service.OnRoomListUpdate += _lobbyView.UpdateRoomList;
             _service.OnPlayerListUpdated += players => 
                 _roomView.SetPlayersList(players.Select(player => $"Player{player.ActorNumber}").ToList());
             
-            _service.OnJoinedLobby += () => _lobbyView.gameObject.SetActive(true);
-            _service.OnLeftLobby += () => _lobbyView.gameObject.SetActive(false);
+            _service.OnJoinedLobby += () => _lobbyView.Show();
+            _service.OnLeftLobby += () => _lobbyView.Hide();
             
             _service.OnJoinedRoom += () =>
             {
-                _roomView.gameObject.SetActive(true);
-                _lobbyView.gameObject.SetActive(false);
+                _roomView.Show(PhotonNetwork.CurrentRoom.Name, PhotonNetwork.IsMasterClient);
+                _lobbyView.Hide();
             };
             
             _service.OnLeftRoom += () =>
             {
-                _roomView.gameObject.SetActive(false);
-                _lobbyView.gameObject.SetActive(true);
+                if(_roomView != null) _roomView.gameObject.SetActive(false);
+                if(_lobbyView != null) _lobbyView.gameObject.SetActive(true);
             };
 
-            _lobbyView.OnRoonJoin += _service.JoinRoom;
             _lobbyView.OnRoomCreate += _service.CreateRoom;
+            _lobbyView.OnJoinRoom += room => _service.JoinRoomAs(room, PlayerRole.Player);
+            _lobbyView.OnSpecatateRoom += room => _service.JoinRoomAs(room, PlayerRole.Spectator);
+            
+            _roomView.OnRequestPlay += () =>
+            {
+                PhotonView.Get(roomView).RPC("StartGame", RpcTarget.All);
+            };
 
-            _roomView.OnPlay += () =>
+            _roomView.OnStartGame += () =>
             {
                 _lobbyView.gameObject.SetActive(false);
                 _roomView.gameObject.SetActive(false);
-                gameInstaller.Initialize();
+                gameInstaller.Initialize(PlayerRole.Player);
             };
         }
     }

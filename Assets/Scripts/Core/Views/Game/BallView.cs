@@ -6,17 +6,17 @@ namespace Core.Views.Game
     [RequireComponent(typeof(Rigidbody2D))]
     public class BallView : MonoBehaviour
     {
-        public Rigidbody2D Rigidbody => _rigidbody; 
+        public Rigidbody2D Rigidbody => 
+            _rigidbody != null ? 
+            _rigidbody : 
+            _rigidbody = GetComponent<Rigidbody2D>(); 
+        
         private Rigidbody2D _rigidbody;
 
-        private void Awake()
+        private void OnDrawGizmos()
         {
-            _rigidbody = GetComponent<Rigidbody2D>();
-        }
-
-        public void SetVelocity(Vector2 velocity)
-        {
-            _rigidbody.velocity = velocity;
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(Rigidbody.position, Rigidbody.position + Rigidbody.velocity);
         }
     }
 }
