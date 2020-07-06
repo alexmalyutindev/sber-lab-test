@@ -39,6 +39,7 @@ MonoBehaviour:
   - StartGame
   - ChangeScores
   - SetPlayerWins
+  - RestartGame
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

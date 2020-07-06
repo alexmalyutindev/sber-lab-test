@@ -810,6 +810,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cbefae8ff59340b2a2d494157ea96ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ballSpeedView: {fileID: 8044681981973489015}
   _slider: {fileID: 1256392318321736849}
   _speedField: {fileID: 3468434944940264194}
   _leftScore: {fileID: 8024850057680880671}

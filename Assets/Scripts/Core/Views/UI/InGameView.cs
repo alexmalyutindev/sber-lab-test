@@ -15,15 +15,17 @@ namespace Core.Views.UI
         public event Action<string> OnPlayerWins;
 
 #pragma warning disable 0649
-        [Header("Ball Speed")] [SerializeField]
-        private Slider _slider;
-
+        [Header("Ball Speed")] 
+        [SerializeField] private GameObject _ballSpeedView;
+        [SerializeField] private Slider _slider;
         [SerializeField] private Text _speedField;
 
-        [Header("Scores")] [SerializeField] private Text _leftScore;
+        [Header("Scores")] 
+        [SerializeField] private Text _leftScore;
         [SerializeField] private Text _rightScore;
 
         [Space] [SerializeField] private MessageWindow _messageWindowPreafb;
+        private TaskCompletionSource<bool> _messageWindowTCS;
 #pragma warning restore 0649
 
         private void Awake()
@@ -69,20 +71,28 @@ namespace Core.Views.UI
             OnScoresChanged?.Invoke(left, right);
         }
 
-        public void Show()
+        public void Show(bool showBallSpeedView)
         {
             gameObject.SetActive(true);
+            _ballSpeedView.SetActive(showBallSpeedView);
         }
 
-        public async Task<bool> ShowMessage(string message)
+        public async Task<bool> ShowMessage(string message, bool showButtons)
         {
-            return await Instantiate(_messageWindowPreafb, transform).Show(message);
+            _messageWindowTCS = new TaskCompletionSource<bool>();
+            return await Instantiate(_messageWindowPreafb, transform).Show(message, showButtons, _messageWindowTCS);
         }
 
         [PunRPC]
         public void SetPlayerWins(string playerSide)
         {
             OnPlayerWins?.Invoke(playerSide);
+        }
+
+        [PunRPC]
+        public void RestartGame()
+        {
+            _messageWindowTCS?.SetCanceled();
         }
 
         public void Hide()

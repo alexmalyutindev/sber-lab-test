@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,12 +14,14 @@ namespace Core.Views.UI
         [SerializeField] private Button _cancel;
 #pragma warning restore 0649
 
-        public async Task<bool> Show(string message)
+        public async Task<bool> Show(string message, bool showButtons, TaskCompletionSource<bool> tcs)
         {
             _messageField.text = message;
-            
-            var tcs = new TaskCompletionSource<bool>();
+            _apply.interactable = showButtons;
+            _cancel.interactable = showButtons;
 
+            //var tcs = new TaskCompletionSource<bool>();
+            
             void ApplyHandler() => tcs.SetResult(true);
             void CancelHandler() => tcs.SetResult(false);
 
@@ -30,6 +34,7 @@ namespace Core.Views.UI
                 _cancel.onClick.RemoveListener(CancelHandler);
                 Destroy(gameObject);
             }, TaskScheduler.FromCurrentSynchronizationContext());
+
 
             return await tcs.Task;
         }

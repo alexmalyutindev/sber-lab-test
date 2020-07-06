@@ -10,7 +10,7 @@ public class LobbyView : MonoBehaviour
 {
     public event Action<RoomInfo> OnJoinRoom;
     public event Action<RoomInfo> OnSpecatateRoom;
-    public event Action<string> OnRoomCreate;
+    public event Action<string> OnCreateRoom;
 
 #pragma warning disable 0649
     [SerializeField] private RoomListItemView _itemPrefab;
@@ -53,7 +53,7 @@ public class LobbyView : MonoBehaviour
 
     private void OnCreatedRoomHandler()
     {
-        OnRoomCreate?.Invoke(_roomNameField.text);
+        OnCreateRoom?.Invoke(_roomNameField.text);
     }
 
     private void RemoveRoomItem(RoomInfo roomInfo)

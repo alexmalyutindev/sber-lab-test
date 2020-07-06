@@ -22,11 +22,11 @@ namespace Core.Views.UI
             _play.onClick.AddListener(PlayHandler);
         }
 
-        public void Show(string roomName, bool isHost)
+        public void Show(string roomName, bool playButtonActive)
         {
             gameObject.SetActive(true);
             _roomNameField.text = $"Room: {roomName}";
-            _play.interactable = isHost;
+            _play.interactable = playButtonActive;
         }
 
         public void Hide()
@@ -46,5 +46,9 @@ namespace Core.Views.UI
             _playerListField.text = String.Join("\n", players);
 
 
+        public void SetPlayButtonActive(bool active)
+        {
+            _play.interactable = active;
+        }
     }
 }

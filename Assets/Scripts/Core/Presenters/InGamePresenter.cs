@@ -13,15 +13,15 @@ namespace Core.Presenters
         {
             _view = view;
 
-            _view.Show();
+            _view.Show(PhotonNetwork.IsMasterClient
+                       || TryGetPlayerRole(out var role) && (PlayerRole) role == PlayerRole.Spectator
+            );
             _view.Initialize(config.MinBallSpeed, config.MaxBallSpeed, config.BallSpeed);
             _view.OnSpeedSliderChanged += SpeedSliderChangedHandler;
             _view.OnSpeedChanged += ballModel.SetBallSpeed;
 
-            _view.OnPlayerWins += playerSide =>
-            {
-                _view.ShowMessage($"Wins {playerSide} player!\nRestart?");
-            };
+            _view.OnPlayerWins += playerSide => 
+                _view.ShowMessage($"Wins {playerSide} player!\nRestart?", PhotonNetwork.IsMasterClient);
 
             if (PhotonNetwork.IsMasterClient)
             {
@@ -36,16 +36,17 @@ namespace Core.Presenters
                 {
                     ballModel.StopSimulation();
                     PhotonView.Get(_view).RPC("SetPlayerWins", RpcTarget.Others, side.ToString());
-                    
-                    _view.ShowMessage($"Wins {side} player!\nRestart?")
+
+                    _view.ShowMessage($"Wins {side} player!\nRestart?", PhotonNetwork.IsMasterClient)
                         .ContinueWith(task =>
                         {
                             if (task.Result)
                             {
+                                PhotonView.Get(_view).RPC("RestartGame", RpcTarget.Others);
                                 gameModel.ResetScore();
-                                ballModel.StartSimulation(config.BallSpeed);
+                                ballModel.StartSimulation();
                             }
-                        },TaskScheduler.FromCurrentSynchronizationContext());
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
                 };
             }
             else
@@ -56,6 +57,11 @@ namespace Core.Presenters
                     gameModel.SetScores(left, right);
                 };
             }
+        }
+
+        private static bool TryGetPlayerRole(out object role)
+        {
+            return PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Role", out role);
         }
 
         private void SpeedSliderChangedHandler(float speed)
