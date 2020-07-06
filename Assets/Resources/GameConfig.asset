@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RacketPrefab: {fileID: 614510832807036011, guid: f96b9cd0cbce841b0a17dc974683d224,
     type: 3}
-  MaxScore: 10
+  MaxScore: 2
   BallSpeed: 3
   MinBallSpeed: 0.1
   MaxBallSpeed: 5

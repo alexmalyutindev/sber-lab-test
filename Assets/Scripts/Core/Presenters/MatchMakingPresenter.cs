@@ -30,9 +30,10 @@ namespace Core.Presenters
             _service.OnJoinedLobby += () => _lobbyView.Show();
             _service.OnLeftLobby += () => _lobbyView.Hide();
             
-            _service.OnJoinedRoom += () =>
+            _service.OnJoinedRoom += role =>
             {
-                _roomView.Show(PhotonNetwork.CurrentRoom.Name, PhotonNetwork.IsMasterClient);
+                if (role == PlayerRole.Player)
+                    _roomView.Show(PhotonNetwork.CurrentRoom.Name, PhotonNetwork.IsMasterClient);
                 _lobbyView.Hide();
             };
             
@@ -44,10 +45,16 @@ namespace Core.Presenters
 
             _lobbyView.OnRoomCreate += _service.CreateRoom;
             _lobbyView.OnJoinRoom += room => _service.JoinRoomAs(room, PlayerRole.Player);
-            _lobbyView.OnSpecatateRoom += room => _service.JoinRoomAs(room, PlayerRole.Spectator);
+            _lobbyView.OnSpecatateRoom += room =>
+            {
+                _service.JoinRoomAs(room, PlayerRole.Spectator);
+                //PhotonView.Get(roomView).RPC("StartGame", RpcTarget.All);
+                gameInstaller.Initialize(_service.PlayerRole);
+            };
             
             _roomView.OnRequestPlay += () =>
             {
+                // TODO: Преместить RPC в одну шину 
                 PhotonView.Get(roomView).RPC("StartGame", RpcTarget.All);
             };
 
@@ -55,7 +62,7 @@ namespace Core.Presenters
             {
                 _lobbyView.gameObject.SetActive(false);
                 _roomView.gameObject.SetActive(false);
-                gameInstaller.Initialize(PlayerRole.Player);
+                gameInstaller.Initialize(_service.PlayerRole);
             };
         }
     }

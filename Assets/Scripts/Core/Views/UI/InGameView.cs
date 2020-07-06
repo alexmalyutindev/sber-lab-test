@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,16 +10,22 @@ namespace Core.Views.UI
     {
         public event Action<float> OnSpeedSliderChanged;
         public event Action<float> OnSpeedChanged;
-        
+        public event Action<int, int> OnScoresChanged;
+
+        public event Action<string> OnPlayerWins;
+
 #pragma warning disable 0649
-        [Header("Ball Speed")]
-        [SerializeField] private Slider _slider;
+        [Header("Ball Speed")] [SerializeField]
+        private Slider _slider;
+
         [SerializeField] private Text _speedField;
-        
+
         [Header("Scores")] [SerializeField] private Text _leftScore;
         [SerializeField] private Text _rightScore;
+
+        [Space] [SerializeField] private MessageWindow _messageWindowPreafb;
 #pragma warning restore 0649
-        
+
         private void Awake()
         {
             _slider.onValueChanged.AddListener(OnSliderValueChanged);
@@ -40,7 +47,7 @@ namespace Core.Views.UI
             _slider.minValue = minSpeed;
             _slider.maxValue = maxSpeed;
             _slider.value = currentSpeed;
-            
+
             SetSpeedText(currentSpeed);
         }
 
@@ -56,11 +63,28 @@ namespace Core.Views.UI
             OnSpeedChanged?.Invoke(speed);
         }
 
+        [PunRPC]
+        public void ChangeScores(int left, int right)
+        {
+            OnScoresChanged?.Invoke(left, right);
+        }
+
         public void Show()
         {
             gameObject.SetActive(true);
         }
-        
+
+        public async Task<bool> ShowMessage(string message)
+        {
+            return await Instantiate(_messageWindowPreafb, transform).Show(message);
+        }
+
+        [PunRPC]
+        public void SetPlayerWins(string playerSide)
+        {
+            OnPlayerWins?.Invoke(playerSide);
+        }
+
         public void Hide()
         {
             gameObject.SetActive(false);

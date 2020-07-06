@@ -814,6 +814,8 @@ MonoBehaviour:
   _speedField: {fileID: 3468434944940264194}
   _leftScore: {fileID: 8024850057680880671}
   _rightScore: {fileID: 3008127044855635632}
+  _messageWindowPreafb: {fileID: 4216883459780915076, guid: b772e526c60fd4fada2bb6dbde2134ef,
+    type: 3}
 --- !u!114 &5687351160926236752
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -27,7 +27,7 @@ namespace Core
         [Space] [SerializeField] private InGameView _gameView;
 #pragma warning restore 0649
 
-        private GameModel _gameModel;
+        private IGameModel _gameModel;
         private PlayerInputService _inputService;
         private BallModel _ballModel;
 
@@ -41,23 +41,20 @@ namespace Core
             _leftRacket.SetStyle(_config.RacketPrefab);
             _rightRacket.SetStyle(_config.RacketPrefab);
 
-            _ballModel = gameObject.AddComponent<BallModel>();
-            
-            _gameModel = new GameModel(_leftTrigger, _righttTrigger, _config);
-            var inGamePresenter = new InGamePresenter(_gameView, _ballModel, _gameModel, _config, playerRole);
+            _ballModel = gameObject.AddComponent<BallModel>().Initialize(_ball);
+
+            _gameModel = PhotonNetwork.IsMasterClient
+                ? (IGameModel) new GameModel(_leftTrigger, _righttTrigger, _config)
+                : (IGameModel) new ClientGameModel();
+
+            var inGamePresenter = new InGamePresenter(_gameView, _ballModel, _gameModel, _config);
 
             if (playerRole == PlayerRole.Player)
             {
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    _ballModel.Initialize(_ball);
-                }
-
                 var targetRacket = GetTargetRacket();
                 _inputService = gameObject.AddComponent<PlayerInputService>().Initialize(_camera, targetRacket);
             }
-
-
+            
             _gameModel.ResetScore();
             _ballModel.StartSimulation(_config.BallSpeed);
         }

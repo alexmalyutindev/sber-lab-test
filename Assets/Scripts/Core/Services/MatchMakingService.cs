@@ -20,7 +20,7 @@ namespace Core.Services
 
         public event Action<List<TypedLobbyInfo>> OnLobbyStatisticsUpdate;
 
-        public event Action OnJoinedRoom;
+        public event Action<PlayerRole> OnJoinedRoom;
         public event Action OnLeftRoom;
 
         public PlayerRole PlayerRole;
@@ -62,7 +62,7 @@ namespace Core.Services
 
         void IMatchmakingCallbacks.OnJoinedRoom()
         {
-            OnJoinedRoom?.Invoke();
+            OnJoinedRoom?.Invoke(PlayerRole);
             UpdatePlayerList();
         }
 

@@ -35,6 +35,7 @@ namespace Core.Models
             var direction = (new Vector2(side ? -1 : 1, Random.Range(-0.5f, 0.5f))).normalized;
             _ball.velocity = direction * initialBallSpeed * Time.fixedDeltaTime;
             _simulate = true;
+            Debug.Log($"StartSimulation {initialBallSpeed}");
         }
         
         public void StartSimulation()
@@ -47,6 +48,7 @@ namespace Core.Models
             _ball.position = Vector2.zero;
             _ball.velocity = Vector2.zero;
             _simulate = false;
+            Debug.Log("StopSimulation");
         }
 
         [PunRPC]
@@ -61,7 +63,7 @@ namespace Core.Models
                 UpdatePosition(Time.fixedDeltaTime * _ballSpeed);
         }
 
-        public void UpdatePosition(float moveDelta)
+        private void UpdatePosition(float moveDelta)
         {
             var normalizedVelocity = _ball.velocity.normalized;
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Core.Models
 {
-    public class GameModel
+    public class GameModel : IGameModel
     {
         public event Action<PlayerSide> OnPlayerWins;
         public event Action<int, int> OnScoreChanged;
@@ -20,10 +20,8 @@ namespace Core.Models
 
             _scores = new Dictionary<PlayerSide, int>() {{PlayerSide.Left, 0}, {PlayerSide.Right, 0}};
 
-            leftPlayerTrigger.OnTriggerEnter += () => AddScore(PlayerSide.Left);
-            rightPlayerTrigger.OnTriggerEnter += () => AddScore(PlayerSide.Right);
-            
-            
+            leftPlayerTrigger.OnTriggerEnter += () => AddScore(PlayerSide.Right);
+            rightPlayerTrigger.OnTriggerEnter += () => AddScore(PlayerSide.Left);
         }
 
         public void ResetScore()
@@ -32,13 +30,19 @@ namespace Core.Models
             OnScoreChanged?.Invoke(_scores[PlayerSide.Left], _scores[PlayerSide.Right]);
         }
 
+        public void SetPlayerWin(PlayerSide side)
+        {
+            OnPlayerWins?.Invoke(side);
+        }
+
+        public void SetScores(int left, int right) { }
+
         private void AddScore(PlayerSide side)
         {
-            Debug.Log(side);
             _scores[side]++;
             OnScoreChanged?.Invoke(_scores[PlayerSide.Left], _scores[PlayerSide.Right]);
             if (_scores[side] >= _config.MaxScore)
-                OnPlayerWins?.Invoke(side);
+                SetPlayerWin(side);
         }
     }
 
